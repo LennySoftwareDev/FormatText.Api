@@ -1,5 +1,6 @@
 package com.apirest.application.service;
 
+import com.apirest.application.model.response.TextResponseDto;
 import com.apirest.utils.TextFormatter;
 import com.apirest.utils.ValidatorResponse;
 import com.apirest.utils.Validators;
@@ -9,15 +10,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ProcessTextServiceImplTest {
 
+    @InjectMocks
+    private ProcessTextServiceImpl processTextService;
     @Mock
     private Validators validators;
+
+    @Mock
+    private TextFormatter textFormatter;
 
     @Test
     void validateText_invalidText_returnsEmptyList() {
@@ -47,5 +54,26 @@ public class ProcessTextServiceImplTest {
 
         assertTrue(result.isValid(), "");
         verify(validators, times(1)).validateFormatInitialText(textToProcess);
+    }
+
+    @Test
+    void validate_changeFormatText(){
+
+        String textToProcess = "Valid text";
+        ValidatorResponse validResponse = new ValidatorResponse(true, null);
+        List<TextResponseDto> formattedResponse = List.of(new TextResponseDto("formatted text"));
+
+        when(validators.validateTextContent(textToProcess)).thenReturn(validResponse);
+        when(textFormatter.changeFormatText(textToProcess)).thenReturn(formattedResponse);
+
+        List<TextResponseDto> result = processTextService.validateText(textToProcess);
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty(), "Debe retornar una lista cuando el texto es válido");
+        assertEquals(formattedResponse, result, "Debe retornar la lista formateada correctamente");
+
+        verify(validators).validateTextContent(textToProcess);
+        verify(textFormatter).changeFormatText(textToProcess);
+        verify(textFormatter, times(1)).changeFormatText(textToProcess);
     }
 }

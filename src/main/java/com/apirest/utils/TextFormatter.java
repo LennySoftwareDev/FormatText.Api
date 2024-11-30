@@ -11,6 +11,7 @@ import java.util.List;
 public final class TextFormatter {
     @Autowired
     Validators validators;
+
     public List<TextResponseDto> changeFormatText(String textToProcess) {
 
         List<TextResponseDto> newTextFormat = new ArrayList<>();
@@ -38,7 +39,6 @@ public final class TextFormatter {
 
             newTextFormat.add(new TextResponseDto(createNewText));
         }
-
         return newTextFormat;
     }
 }
