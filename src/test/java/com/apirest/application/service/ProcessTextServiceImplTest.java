@@ -11,12 +11,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ProcessTextServiceImplTest {
+
+    String textToProcess = "3\\\\the force is strong in this one";
+    String textChanged = "the force is strong in this one\\\\true";
 
     @InjectMocks
     private ProcessTextServiceImpl processTextService;
@@ -28,8 +33,6 @@ public class ProcessTextServiceImplTest {
 
     @Test
     void validateText_invalidText_returnsEmptyList() {
-
-        String textToProcess = "";
 
         ValidatorResponse invalidResponse = new ValidatorResponse(false, "Error");
 
@@ -44,14 +47,15 @@ public class ProcessTextServiceImplTest {
     @Test
     void validate_formatText() {
 
-        String textToProcess = "3\\\\the force is strong in this one";
-
+        int number = Integer.parseInt(textToProcess.substring(0,1));
         ValidatorResponse validResponse = new ValidatorResponse(true, "");
 
         when(validators.validateFormatInitialText(textToProcess)).thenReturn(validResponse);
 
         ValidatorResponse result = validators.validateFormatInitialText(textToProcess);
 
+        assertEquals(true,textToProcess.contains("\\"), "Formato válido");
+        assertEquals(number,3, "Formato válido");
         assertTrue(result.isValid(), "");
         verify(validators, times(1)).validateFormatInitialText(textToProcess);
     }
@@ -59,9 +63,13 @@ public class ProcessTextServiceImplTest {
     @Test
     void validate_changeFormatText(){
 
-        String textToProcess = "Valid text";
+        String matchWith = "true";
+        Pattern pattern = Pattern.compile("\\b" + Pattern.quote(matchWith) + "\\b");
+        Matcher matcher = pattern.matcher(textChanged);
+
         ValidatorResponse validResponse = new ValidatorResponse(true, null);
-        List<TextResponseDto> formattedResponse = List.of(new TextResponseDto("formatted text"));
+        List<TextResponseDto> formattedResponse =
+                List.of(new TextResponseDto("the force is strong in this one\\\\true"));
 
         when(validators.validateTextContent(textToProcess)).thenReturn(validResponse);
         when(textFormatter.changeFormatText(textToProcess)).thenReturn(formattedResponse);
@@ -69,7 +77,10 @@ public class ProcessTextServiceImplTest {
         List<TextResponseDto> result = processTextService.validateText(textToProcess);
 
         assertNotNull(result);
-        assertFalse(result.isEmpty(), "Debe retornar una lista cuando el texto es válido");
+        assertNotEquals(textToProcess,formattedResponse.get(0).toString());
+        assertEquals(true,textToProcess.contains("\\"), "Formato válido");
+        assertTrue(matcher.find());
+        assertFalse(result.isEmpty(), "Debe retornar una lista con el cambio de formato del texto");
         assertEquals(formattedResponse, result, "Debe retornar la lista formateada correctamente");
 
         verify(validators).validateTextContent(textToProcess);
