@@ -6,12 +6,12 @@ import java.util.List;
 
 public class GenericResponseDto<TGeneric> {
 
-    private TGeneric result;
-    private HttpStatus statusCode;
+    private final TGeneric result;
+    private final HttpStatus statusCode;
 
-    private String statusDescription;
+    private final String statusDescription;
 
-    private List<String> listErrors;
+    private final List<String> listErrors;
 
     public GenericResponseDto(TGeneric result, HttpStatus statusCode, String statusDescription, List<String> errors) {
         this.result = result;
@@ -24,31 +24,15 @@ public class GenericResponseDto<TGeneric> {
         return result;
     }
 
-    public void setResult(TGeneric result) {
-        this.result = result;
-    }
-
     public HttpStatus getStatusCode() {
         return statusCode;
-    }
-
-    public void setStatusCode(HttpStatus statusCode) {
-        this.statusCode = statusCode;
     }
 
     public String getStatusDescription() {
         return statusDescription;
     }
 
-    public void setStatusDescription(String statusDescription) {
-        this.statusDescription = statusDescription;
-    }
-
     public List<String> getListErrors() {
         return listErrors;
-    }
-
-    public void setListErrors(List<String> listErrors) {
-        this.listErrors = listErrors;
     }
 }
