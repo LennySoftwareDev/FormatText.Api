@@ -10,7 +10,7 @@ import java.util.List;
 @Component
 public final class TextFormatter {
     @Autowired
-    Validators validators;
+    public Validators validators;
 
     public List<TextResponseDto> changeFormatText(String textToProcess) {
 

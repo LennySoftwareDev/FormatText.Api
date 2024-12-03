@@ -1,9 +1,9 @@
 package com.apirest.controller;
 
 import com.apirest.application.model.request.TextRequestDto;
-import com.apirest.utils.GenericResponseDto;
 import com.apirest.application.model.response.TextResponseDto;
 import com.apirest.application.service.ProcessTextService;
+import com.apirest.utils.GenericResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +25,12 @@ public class ProcessTextController {
     public ResponseEntity<GenericResponseDto<List<TextResponseDto>>> processText(@RequestBody TextRequestDto textRequestDto) {
 
         try {
-            String text = textRequestDto.getText();
 
-            List<TextResponseDto> textResponse = processTextService.validateText(text);
+            List<TextResponseDto> textResponse = processTextService.validateText(textRequestDto.text());
 
             GenericResponseDto<List<TextResponseDto>> response = new GenericResponseDto<>(
                     textResponse,
-                    HttpStatus.ACCEPTED,
+                    HttpStatus.OK,
                     "Proceso exitoso",
                     Collections.emptyList()
             );
